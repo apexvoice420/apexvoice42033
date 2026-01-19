@@ -12,7 +12,7 @@ export default function Hero() {
             {/* Background Animation */}
             <div className={styles.animContainer}>
                 <FrameAnimation
-                    path="/hero-animation/frame_"
+                    path="/images/animation/frame_"
                     frameCount={191}
                     fps={30}
                 />
