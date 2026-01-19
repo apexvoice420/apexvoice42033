@@ -39,7 +39,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                 method: 'POST',
                 mode: 'no-cors', // Important for Google Apps Script
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'text/plain;charset=utf-8',
                 },
                 body: JSON.stringify(formData)
             });
