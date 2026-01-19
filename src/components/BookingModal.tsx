@@ -35,13 +35,21 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         }
 
         try {
+            // Use URLSearchParams for application/x-www-form-urlencoded
+            const params = new URLSearchParams();
+            params.append('name', formData.name);
+            params.append('email', formData.email);
+            params.append('phone', formData.phone);
+            params.append('company', formData.company);
+            params.append('message', formData.message);
+
             await fetch(WEBHOOK_URL, {
                 method: 'POST',
-                mode: 'no-cors', // Important for Google Apps Script
+                mode: 'no-cors',
                 headers: {
-                    'Content-Type': 'text/plain;charset=utf-8',
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: JSON.stringify(formData)
+                body: params.toString()
             });
 
             // Since 'no-cors' mode is opaque, we assume success if no network error thrown
