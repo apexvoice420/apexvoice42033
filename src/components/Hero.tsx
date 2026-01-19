@@ -22,12 +22,7 @@ export default function Hero() {
     const contentOpacity = useTransform(smoothProgress, [0, 0.2], [0, 1]);
     const contentY = useTransform(smoothProgress, [0, 0.2], [40, 0]);
 
-    const handleHearVoice = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (vapiRef.current) {
-            vapiRef.current.toggle();
-        }
-    };
+
 
     return (
         <section ref={containerRef} className={styles.section}>
@@ -65,13 +60,7 @@ export default function Hero() {
                         <Link href="#book" className={styles.primaryButton}>
                             Book a Demo
                         </Link>
-                        <button
-                            onClick={handleHearVoice}
-                            className={styles.secondaryButton}
-                            style={{ border: 'none', cursor: 'pointer', fontSize: 'inherit' }}
-                        >
-                            Hear the AI in Action
-                        </button>
+
                     </motion.div>
                 </div>
             </div>
