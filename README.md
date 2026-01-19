@@ -18,8 +18,8 @@ Marketing website for Apex Voice Solutions, built with Next.js, Framer Motion, a
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/apexvoice420/apexvoice-site.git
-    cd apexvoice-site
+    git clone https://github.com/apexvoice420/apex-voice-solutions.git
+    cd apex-voice-solutions
     ```
 
 2.  Install dependencies:
