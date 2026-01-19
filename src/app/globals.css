@@ -3,7 +3,8 @@
   --foreground: #ededed;
   --primary: #ffffff;
   --secondary: #a1a1aa;
-  --accent: #3b82f6; /* Premium Blue */
+  --accent: #3b82f6;
+  /* Premium Blue */
   --accent-glow: rgba(59, 130, 246, 0.5);
   --font-sans: 'Inter', sans-serif;
 }
@@ -28,13 +29,21 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--secondary);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* Global Section Padding */
+section {
+  padding: 80px 0;
 }
