@@ -22,8 +22,9 @@ export default function Hero() {
     const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
 
     // Animation values
-    const contentOpacity = useTransform(smoothProgress, [0, 0.2], [0, 1]);
-    const contentY = useTransform(smoothProgress, [0, 0.2], [40, 0]);
+    // Fix: Start fully visible (1) and fade out (0) as user scrolls down
+    const contentOpacity = useTransform(smoothProgress, [0, 0.5], [1, 0]);
+    const contentY = useTransform(smoothProgress, [0, 0.5], [0, 50]);
 
 
     const handleHearVoice = (e: React.MouseEvent) => {
