@@ -65,18 +65,26 @@ const VapiManager = forwardRef<VapiRef, {}>((props, ref) => {
     }, []);
 
     const startCall = async () => {
+        const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
         const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
+
+        if (!publicKey) {
+            alert('Error: Missing Public Key. Please set NEXT_PUBLIC_VAPI_PUBLIC_KEY in Vercel Environment Variables.');
+            return;
+        }
+
         if (!assistantId) {
             console.error('Missing NEXT_PUBLIC_VAPI_ASSISTANT_ID');
-            alert('Please configure NEXT_PUBLIC_VAPI_ASSISTANT_ID');
+            alert('Error: Missing Assistant ID. Please set NEXT_PUBLIC_VAPI_ASSISTANT_ID in Vercel Environment Variables.');
             return;
         }
 
         setIsLoading(true);
         try {
             await vapi.start(assistantId);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to start Vapi call', err);
+            alert(`Failed to connect to Vapi: ${err.message || JSON.stringify(err)}`);
             setIsLoading(false);
         }
     };
