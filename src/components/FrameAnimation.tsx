@@ -93,8 +93,10 @@ export default function FrameAnimation({
     useEffect(() => {
         const handleResize = () => {
             if (canvasRef.current && canvasRef.current.parentElement) {
-                canvasRef.current.width = canvasRef.current.parentElement.clientWidth;
-                canvasRef.current.height = canvasRef.current.parentElement.clientHeight;
+                const dpr = window.devicePixelRatio || 1;
+                // Set the canvas size to the hardware resolution
+                canvasRef.current.width = canvasRef.current.parentElement.clientWidth * dpr;
+                canvasRef.current.height = canvasRef.current.parentElement.clientHeight * dpr;
             }
         };
 
