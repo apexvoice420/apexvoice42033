@@ -26,7 +26,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
         e.preventDefault();
         setIsLoading(true);
 
-        const WEBHOOK_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL;
+        const WEBHOOK_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL || 'https://script.google.com/macros/s/AKfycby9KTHybDogFssgB1I-Aj0iMZ5qmHtpZue68uS7qP38WS00JhyoP13An0EGWWsvs4-l/exec';
 
         if (!WEBHOOK_URL) {
             alert('Booking System Config Error: Missing NEXT_PUBLIC_GOOGLE_SHEET_URL');
