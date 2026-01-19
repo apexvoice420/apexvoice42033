@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
 import styles from './SocialCTA.module.css';
 import FrameAnimation from './FrameAnimation';
+import BookingModal from './BookingModal';
 
 export function SocialProof() {
     return (
@@ -61,6 +63,8 @@ function Testimonial({ quote, author, role, imageSrc }: { quote: string; author:
 }
 
 export function FinalCTA() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     return (
         <section className={styles.ctaSection}>
             <div className={styles.ctaBackground}>
@@ -74,10 +78,15 @@ export function FinalCTA() {
             </div>
             <div className={styles.ctaContent}>
                 <h2 className={styles.ctaTitle}>Unlock 24/7 Voice Automation</h2>
-                <Link href="#book" className={styles.ctaButton}>
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    className={styles.ctaButton}
+                    style={{ border: 'none', cursor: 'pointer', fontSize: 'inherit' }}
+                >
                     Book a Demo
-                </Link>
+                </button>
             </div>
+            <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </section>
     );
 }

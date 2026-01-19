@@ -3,13 +3,16 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { useRef } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
 import FrameAnimation from './FrameAnimation';
 import styles from './Hero.module.css';
 import VapiManager, { VapiRef } from './VapiManager';
+import BookingModal from './BookingModal';
 
 export default function Hero() {
     const containerRef = useRef<HTMLDivElement>(null);
     const vapiRef = useRef<VapiRef>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -64,9 +67,13 @@ export default function Hero() {
                         className={styles.ctaGroup}
                         style={{ opacity: contentOpacity, y: contentY }}
                     >
-                        <Link href="#book" className={styles.primaryButton}>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className={styles.primaryButton}
+                            style={{ border: 'none', cursor: 'pointer', fontSize: 'inherit' }}
+                        >
                             Book a Demo
-                        </Link>
+                        </button>
                         <button
                             onClick={handleHearVoice}
                             className={styles.secondaryButton}
@@ -75,6 +82,8 @@ export default function Hero() {
                             Hear the AI in Action
                         </button>
                     </motion.div>
+
+                    <BookingModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
                 </div>
             </div>
         </section >
