@@ -4,7 +4,7 @@ import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import Vapi from '@vapi-ai/web';
 import { Loader2, Mic, PhoneOff } from 'lucide-react';
 
-const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || '');
+const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || 'a9cf45da-3d34-431c-a59a-bb752c474126');
 
 export interface VapiRef {
     start: () => void;
@@ -65,17 +65,17 @@ const VapiManager = forwardRef<VapiRef, {}>((props, ref) => {
     }, []);
 
     const startCall = async () => {
-        const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY;
-        const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID;
+        const publicKey = process.env.NEXT_PUBLIC_VAPI_PUBLIC_KEY || 'a9cf45da-3d34-431c-a59a-bb752c474126';
+        const assistantId = process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID || '77a64bc3-9fbc-4edd-ae80-8e3987e2b492';
 
         if (!publicKey) {
-            alert('Error: Missing Public Key. Please set NEXT_PUBLIC_VAPI_PUBLIC_KEY in Vercel Environment Variables.');
+            alert('Error: Missing Public Key.');
             return;
         }
 
         if (!assistantId) {
-            console.error('Missing NEXT_PUBLIC_VAPI_ASSISTANT_ID');
-            alert('Error: Missing Assistant ID. Please set NEXT_PUBLIC_VAPI_ASSISTANT_ID in Vercel Environment Variables.');
+            console.error('Missing Assistant ID');
+            alert('Error: Missing Assistant ID.');
             return;
         }
 
