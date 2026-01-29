@@ -1,24 +1,18 @@
-from fastapi import FastAPI, Depends, Request, Form, HTTPException, status, BackgroundTasks
+from fastapi import FastAPI, Depends, Request, Form, HTTPException, status, BackgroundTasks, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-from models import SessionLocal, Lead, LeadStatus, Workflow, init_db
-from google_sheets import GoogleSheetsClient
-import auth
-import state_engine
+import io
+import pandas as pd
 import threading
 import time
 import os
-from fastapi import FastAPI, Depends, Request, Form, HTTPException, status, BackgroundTasks, UploadFile, File
-import io
-import pandas as pd
 
-# ... (rest of imports)
-
-
-# --- API Routes for Dashboard Interactivity ---
+from models import LeadStatus
+import auth
+import state_engine
+import firebase_db  # Abstracted Firebase Logic
 
 app = FastAPI(title="Apex Lead OS")
 
@@ -41,14 +35,6 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 # Background Runner
 def start_state_engine():
     # Run every 10 seconds
@@ -58,10 +44,10 @@ def start_state_engine():
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
-    # Start background thread
-    t = threading.Thread(target=start_state_engine, daemon=True)
-    t.start()
+    # Ensure background thread starts if supported (Vercel might kill it, but okay for dev)
+    if not os.environ.get("VERCEL"):
+        t = threading.Thread(target=start_state_engine, daemon=True)
+        t.start()
 
 # --- Auth Helpers ---
 def get_current_admin(request: Request):
@@ -69,7 +55,6 @@ def get_current_admin(request: Request):
     if not token:
         return None
     
-    # Remove "Bearer " if present (though cookie usually just value)
     if token.startswith("Bearer "):
         token = token.split(" ")[1]
         
@@ -89,28 +74,22 @@ def index(request: Request):
     return RedirectResponse(url="/dashboard")
 
 @app.post("/api/webhooks/inbound")
-async def inbound_webhook(request: Request, db: Session = Depends(get_db)):
-    """
-    Public webhook to receive leads from Vercel frontend.
-    Expected JSON: { "name": "...", "phone": "...", "email": "..." }
-    """
+async def inbound_webhook(request: Request):
     try:
         data = await request.json()
-        new_lead = Lead(
-            name=data.get("name"),
-            phone=data.get("phone"),
-            email=data.get("email"),
-            status=LeadStatus.NEW,
-            notes="Inbound Webhook"
-        )
-        db.add(new_lead)
-        db.commit()
+        lead_data = {
+            "name": data.get("name"),
+            "phone": data.get("phone"),
+            "email": data.get("email"),
+            "status": "NEW",
+            "notes": "Inbound Webhook"
+        }
+        firebase_db.add_lead(lead_data)
     except Exception as e:
-        # Log error but return 200 to not break sender? Or 400.
         print(f"Webhook Error: {e}")
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=400)
     
-    return {"status": "success", "lead_id": new_lead.id}
+    return {"status": "success"}
 
 @app.get("/auth/login", response_class=HTMLResponse)
 def login_page(request: Request):
@@ -133,17 +112,17 @@ def logout():
     return response
 
 @app.get("/dashboard", response_class=HTMLResponse)
-def dashboard(request: Request, db: Session = Depends(get_db)):
+def dashboard(request: Request):
     user = get_current_admin(request)
     if not user:
         return RedirectResponse(url="/auth/login")
     
-    leads = db.query(Lead).order_by(Lead.created_at.desc()).all()
+    leads = firebase_db.get_all_leads()
     
     # Calculate Stats
     total_leads = len(leads)
-    calls_made = db.query(Lead).filter(Lead.status != LeadStatus.NEW).count()
-    booked_leads = db.query(Lead).filter(Lead.status == LeadStatus.BOOKED).count()
+    calls_made = sum(1 for l in leads if l.status != "NEW")
+    booked_leads = sum(1 for l in leads if l.status == "BOOKED")
     revenue = booked_leads * 500  # Mock $500 per booked lead
     
     conversion_rate = 0
@@ -167,37 +146,31 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
 # --- API Routes for Dashboard Interactivity ---
 
 @app.post("/api/trigger-call/{lead_id}")
-def trigger_call(lead_id: int, db: Session = Depends(get_db)):
-    lead = db.query(Lead).filter(Lead.id == lead_id).first()
+def trigger_call(lead_id: str):
+    lead = firebase_db.get_lead(lead_id)
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
     # Mock Vapi Trigger
-    print(f"[API] Manually triggering call for {lead.name} ({lead.phone})")
-    lead.status = LeadStatus.CONTACTING
-    lead.notes = (lead.notes or "") + " [Manual Call Triggered]"
-    db.commit()
+    firebase_db.update_lead(lead_id, {
+        "status": "CONTACTING", 
+        "notes": (lead.notes or "") + " [Manual Call Triggered]"
+    })
     
     return {"status": "success", "message": f"Calling {lead.name}..."}
 
 @app.delete("/api/lead/{lead_id}")
-def delete_lead(lead_id: int, db: Session = Depends(get_db)):
-    lead = db.query(Lead).filter(Lead.id == lead_id).first()
-    if not lead:
-        raise HTTPException(status_code=404, detail="Lead not found")
-        
-    db.delete(lead)
-    db.commit()
+def delete_lead(lead_id: str):
+    firebase_db.delete_lead(lead_id)
     return HTMLResponse(status_code=200, content="") # Return empty to remove row
 
 @app.post("/api/campaigns/start")
 def start_campaign(name: str = Form(...)):
     print(f"[API] Starting Campaign: {name}")
-    # Logic to process CSV would go here
     return {"status": "success", "message": f"Campaign {name} started"}
 
 @app.post("/api/leads/import")
-async def import_leads_csv(file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def import_leads_csv(file: UploadFile = File(...)):
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
     
@@ -218,8 +191,8 @@ async def import_leads_csv(file: UploadFile = File(...), db: Session = Depends(g
                 
             phone_str = str(phone).strip() if phone else ""
             
-            # Duplicate Check
-            exists = db.query(Lead).filter((Lead.phone == phone_str) | (Lead.name == name)).first()
+            # Duplicate Check using DB abstraction
+            exists = firebase_db.get_lead_by_phone(phone_str)
             if exists:
                 skipped_count += 1
                 continue
@@ -235,18 +208,15 @@ async def import_leads_csv(file: UploadFile = File(...), db: Session = Depends(g
             
             notes_str = " | ".join(notes_parts)
             
-            new_lead = Lead(
-                name=name,
-                phone=phone_str,
-                email=row.get("Email", ""),
-                status=LeadStatus.NEW,
-                notes=notes_str
-            )
-            db.add(new_lead)
+            firebase_db.add_lead({
+                "name": name,
+                "phone": phone_str,
+                "email": row.get("Email", ""),
+                "status": "NEW",
+                "notes": notes_str
+            })
             imported_count += 1
             
-        db.commit()
-        
         return JSONResponse(content={
             "status": "success",
             "message": f"Imported {imported_count} leads. Skipped {skipped_count} duplicates."
@@ -255,4 +225,3 @@ async def import_leads_csv(file: UploadFile = File(...), db: Session = Depends(g
     except Exception as e:
         print(f"Import Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-

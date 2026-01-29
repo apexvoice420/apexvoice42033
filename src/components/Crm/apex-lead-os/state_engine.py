@@ -1,4 +1,4 @@
-from models import SessionLocal, Lead, LeadStatus
+import firebase_db
 import time
 
 def call_vapi(phone: str):
@@ -15,46 +15,33 @@ def process_leads():
     """
     Background worker process.
     """
-    db = SessionLocal()
     try:
-        # 1. NEW -> CONTACTING
-        new_leads = db.query(Lead).filter(Lead.status == LeadStatus.NEW).all()
-        for lead in new_leads:
-            print(f"Processing NEW lead: {lead.name}")
-            # Trigger Call
-            call_vapi(lead.phone)
-            # Update Status
-            lead.status = LeadStatus.CONTACTING
-            db.commit()
-            print(f"Lead {lead.name} moved to CONTACTING")
-
-        # 2. CONTACTING -> NURTURING (if call failed)
-        # We simulate a check: query leads in CONTACTING.
-        # Ideally, we would need to check call status from Vapi webhook.
-        # For this state machine demo, we assume they failed and need SMS.
-        contacting_leads = db.query(Lead).filter(Lead.status == LeadStatus.CONTACTING).all()
-        for lead in contacting_leads:
-            print(f"Processing CONTACTING lead: {lead.name}")
-            # Check call status... (Simulated as failed)
-            call_failed = True 
-            if call_failed:
-                send_sms(lead.phone, "Hey! Sorry we missed you. When is a good time to chat?")
-                lead.status = LeadStatus.NURTURING
-                db.commit()
-                print(f"Lead {lead.name} moved to NURTURING")
-
-        # 3. NURTURING -> BOOKED (if replied)
-        # This usually requires an inbound webhook from Twilio.
-        # We will Mock this: if lead note contains "REPLIED", move to BOOKED.
-        nurturing_leads = db.query(Lead).filter(Lead.status == LeadStatus.NURTURING).all()
-        for lead in nurturing_leads:
-            if lead.notes and "REPLIED" in lead.notes:
-                print(f"[Admin Alert] Lead {lead.name} has replied!")
-                lead.status = LeadStatus.BOOKED
-                db.commit()
-                print(f"Lead {lead.name} moved to BOOKED")
-
+        leads = firebase_db.get_all_leads() # Inefficient for large DB but okay for demo
+        
+        for lead in leads:
+            # 1. NEW -> CONTACTING
+            if lead.status == "NEW":
+                print(f"Processing NEW lead: {lead.name}")
+                call_vapi(lead.phone)
+                firebase_db.update_lead(lead.id, {"status": "CONTACTING"})
+                print(f"Lead {lead.name} moved to CONTACTING")
+            
+            # 2. CONTACTING -> NURTURING
+            elif lead.status == "CONTACTING":
+                # print(f"Processing CONTACTING lead: {lead.name}")
+                # Simulate logic: call failed
+                call_failed = True 
+                if call_failed:
+                    send_sms(lead.phone, "Hey! Sorry we missed you. When is a good time to chat?")
+                    firebase_db.update_lead(lead.id, {"status": "NURTURING"})
+                    print(f"Lead {lead.name} moved to NURTURING")
+            
+            # 3. NURTURING -> BOOKED
+            elif lead.status == "NURTURING":
+                if lead.notes and "REPLIED" in lead.notes:
+                    print(f"[Admin Alert] Lead {lead.name} has replied!")
+                    firebase_db.update_lead(lead.id, {"status": "BOOKED"})
+                    print(f"Lead {lead.name} moved to BOOKED")
+                    
     except Exception as e:
         print(f"Error in process_leads: {e}")
-    finally:
-        db.close()
