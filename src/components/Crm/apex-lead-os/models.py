@@ -3,7 +3,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 import enum
 from datetime import datetime
 
-DATABASE_URL = "sqlite:///./leads.db"
+import os
+
+if os.environ.get("VERCEL"):
+    DATABASE_URL = "sqlite:////tmp/leads.db"
+else:
+    DATABASE_URL = "sqlite:///./leads.db"
 
 Base = declarative_base()
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
