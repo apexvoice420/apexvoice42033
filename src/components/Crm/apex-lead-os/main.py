@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, Request, Form, HTTPException, status, BackgroundTasks, UploadFile, File
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +13,7 @@ from models import LeadStatus
 import auth
 import state_engine
 import firebase_db  # Abstracted Firebase Logic
+import scraper_service
 
 app = FastAPI(title="Apex Lead OS")
 
@@ -168,6 +169,10 @@ def delete_lead(lead_id: str):
 def start_campaign(name: str = Form(...)):
     print(f"[API] Starting Campaign: {name}")
     return {"status": "success", "message": f"Campaign {name} started"}
+
+@app.get("/api/scraper/stream")
+async def stream_scrape(niche: str, location: str):
+    return StreamingResponse(scraper_service.scrape_gmb_generator(niche, location), media_type="text/event-stream")
 
 @app.post("/api/leads/import")
 async def import_leads_csv(file: UploadFile = File(...)):
