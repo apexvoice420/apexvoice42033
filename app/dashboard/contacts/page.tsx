@@ -1,10 +1,8 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { fetchLeads } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchLeads } from "../../../lib/api";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Search, Loader2 } from "lucide-react";
 import Link from "next/link";
 

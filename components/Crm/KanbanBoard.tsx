@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Lead } from '@/types';
+import { Lead } from '../../types';
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { Phone, MessageSquare } from 'lucide-react';
 

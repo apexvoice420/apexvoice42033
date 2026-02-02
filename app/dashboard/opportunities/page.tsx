@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import KanbanBoard from "@/components/Crm/KanbanBoard";
+import KanbanBoard from "../../../components/Crm/KanbanBoard";
 
 export default function OpportunitiesPage() {
     return (
