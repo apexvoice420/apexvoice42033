@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { fetchLeads } from "../../../lib/api";
 import { Button } from "../../../components/ui/button";
