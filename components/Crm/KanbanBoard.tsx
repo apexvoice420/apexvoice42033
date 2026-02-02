@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Lead } from '@/types';
-import { DndContext, DragEndEvent, DragOverlay, useDraggable, useDroppable } from '@dnd-kit/core';
-import { Loader2, Phone, Calendar, Mail, User, DollarSign, Tag, MessageSquare } from 'lucide-react';
+import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
+import { Phone, MessageSquare } from 'lucide-react';
 
-// Adjusted columns to match likely data or generic usage
-const COLUMNS: { id: string; title: string; color: string }[] = [
-    { id: 'New Lead', title: 'New Leads', color: 'border-blue-500' },
+const COLUMNS: { id: Lead['status']; title: string; color: string }[] = [
+    { id: 'New', title: 'New Leads', color: 'border-blue-500' },
     { id: 'Called', title: 'Hot Leads', color: 'border-yellow-500' },
     { id: 'Booked', title: 'Booking Requested', color: 'border-green-500' },
     { id: 'Retry', title: 'Follow Up', color: 'border-orange-500' },
-    { id: 'Not Interested', title: 'Lost', color: 'border-red-500' },
+    { id: 'Lost', title: 'Lost', color: 'border-red-500' },
 ];
 
 interface KanbanBoardProps {
@@ -29,23 +28,12 @@ export default function KanbanBoard({ initialLeads = [] }: KanbanBoardProps) {
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
-            const leadId = active.id as string;
-            const newStatus = over.id as string; // Cast to string
+            const leadId = active.id; // Correct type?
+            const newStatus = over.id as Lead['status'];
 
             setLeads((prev) =>
-                prev.map(l => l.id == leadId ? { ...l, status: newStatus } : l) // Loose equality for id (int vs string)
+                prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l)
             );
-
-            // Optimistic update done, fire API call
-            try {
-                await fetch(`/api/leads/${leadId}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: newStatus })
-                });
-            } catch (e) {
-                console.error("Failed to update status", e);
-            }
         }
     };
 
@@ -65,7 +53,7 @@ function KanbanColumn({ col, leads }: { col: typeof COLUMNS[0], leads: Lead[] })
         id: col.id,
     });
 
-    const totalValue = leads.length * 1500;
+    const totalValue = leads.length * 1500; // Mock value
 
     return (
         <div
@@ -86,11 +74,6 @@ function KanbanColumn({ col, leads }: { col: typeof COLUMNS[0], leads: Lead[] })
                 {leads.map(lead => (
                     <KanbanCard key={lead.id} lead={lead} statusColor={col.color} />
                 ))}
-                {leads.length === 0 && (
-                    <div className="h-24 border-2 border-dashed border-slate-800 rounded-lg flex items-center justify-center">
-                        <p className="text-xs text-slate-600 font-medium">Empty</p>
-                    </div>
-                )}
             </div>
         </div>
     );
@@ -116,18 +99,21 @@ function KanbanCard({ lead, statusColor }: { lead: Lead, statusColor: string }) 
         ${isDragging ? 'rotate-1 scale-105 shadow-xl ring-2 ring-blue-500/20 z-50' : ''}`}
         >
             <div className="flex justify-between items-start mb-2">
-                <h4 className="font-bold text-slate-200 text-sm hover:text-blue-400 transition-colors truncate pr-2">{lead.businessName}</h4>
-                <p className="text-[10px] text-slate-500 whitespace-nowrap">{new Date(lead.createdAt || Date.now()).toLocaleDateString()}</p>
+                <h4 className="font-bold text-slate-200 text-sm hover:text-blue-400 transition-colors truncate pr-2">{lead.business_name}</h4>
+                <p className="text-[10px] text-slate-500 whitespace-nowrap">Now</p>
             </div>
+
             <div className="mb-3">
                 <span className="text-sm font-bold text-slate-400">$1,500.00</span>
             </div>
+
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-800">
                 <div className="flex flex-wrap gap-1">
                     <span className="text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded border border-slate-700">
-                        {lead.niche || 'General'}
+                        {lead.niche}
                     </span>
                 </div>
+
                 <div className="flex items-center space-x-2">
                     <button className="text-slate-500 hover:text-green-400 hover:bg-green-950/30 p-1 rounded transition">
                         <Phone className="w-3.5 h-3.5" />
