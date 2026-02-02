@@ -22,7 +22,7 @@ export default function LoginPage() {
         if (email && password) {
             console.log("Mock login successful");
             // Simulate session token if needed, or just redirect
-            router.push("/dashboard/crm");
+            router.push("/dashboard");
         } else {
             setError("Please enter valid credentials.");
         }
