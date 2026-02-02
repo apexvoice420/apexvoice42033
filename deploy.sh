@@ -1,37 +1,22 @@
 #!/bin/bash
 
-echo "🚀 Starting Deployment for Apex Voice Solutions..."
+echo "🚀 Starting Hybrid Deployment: Railway (Backend) + Vercel (Frontend)"
 
-# 1. Check for Login (Basic Check)
-echo "🔍 Checking configuration..."
-
-# 2. Deploy Cloud Functions (Backend)
+# 1. Backend (Railway)
 echo "--------------------------------------------------"
-echo "📦 Step 1: Deploying Backend (Firebase Functions)..."
+echo "📦 Step 1: Deploying Backend to Railway..."
 echo "--------------------------------------------------"
-# We use --only functions to avoid overwriting frontend hosting rules if any
-npx firebase deploy --only functions
+echo "NOTE: Ensure your Railway Service Root Directory is set to /server"
+# Railway CLI usage placeholder - usually done via git push
+# railway up --service apex-voice-backend
+echo "👉 Please check your Railway dashboard for deployment status via Git Push."
 
-if [ $? -ne 0 ]; then
-    echo "⚠️  Backend deployment had an issue."
-    echo "   If it failed due to authentication, run: npx firebase login"
-    echo "   Then try this script again."
-    # We don't exit here because the user might just want to update frontend
-fi
-
-# 3. Deploy Frontend (Vercel)
+# 2. Frontend (Vercel)
 echo "--------------------------------------------------"
-echo "🌐 Step 2: Deploying Frontend (Vercel)..."
+echo "🌐 Step 2: Deploying Frontend to Vercel..."
 echo "--------------------------------------------------"
-# First run (to configure project if needed) or deploy
-npx vercel
-
-if [ $? -ne 0 ]; then
-    echo "❌ Frontend deployment failed."
-    echo "   Try running: npx vercel login"
-    exit 1
-fi
+npx vercel --prod
 
 echo "--------------------------------------------------"
-echo "✅ Deployment Process Complete!"
+echo "✅ Deployment Triggered!"
 echo "--------------------------------------------------"
