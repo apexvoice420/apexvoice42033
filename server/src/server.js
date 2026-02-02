@@ -16,8 +16,8 @@ initDB();
 // Routes
 app.use('/api/scraper', require('./routes/scraper'));
 app.use('/api/leads', require('./routes/leads'));
-// app.use('/api/calls', require('./routes/calls'));
-// app.use('/api/campaigns', require('./routes/campaigns'));
+app.use('/api/calls', require('./routes/calls'));
+app.use('/api/campaigns', require('./routes/campaigns'));
 // app.use('/api/stats', require('./routes/stats'));
 app.use('/api/webhooks', require('./routes/webhooks'));
 
