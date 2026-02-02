@@ -1,17 +1,24 @@
 export interface Lead {
     id?: string;
     businessName: string;
-    phoneNumber: string;
+    phone: string;
+    address?: string;
     website?: string;
-    status: 'New' | 'Called' | 'Booked' | 'Retry' | 'Lost';
+    status: 'New Lead' | 'Called' | 'Demo Booked' | 'Not Interested';
     city: string;
-    niche: string;
-    lastContacted?: Date | null;
+    state?: string;
+    niche?: string;
+    rating?: number;
+    lastContacted?: any; // Firestore Timestamp
     notes?: string;
-    createdAt?: Date;
+    createdAt?: any;
+    source?: string;
 }
 
 export interface ScrapeRequest {
     city: string;
-    niche: string;
+    state: string;
+    type: string;
+    minRating: number;
+    maxResults: number;
 }

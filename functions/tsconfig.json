@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "outDir": "lib",
+        "sourceMap": true,
+        "noUnusedLocals": false,
+        "target": "es2017",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "compileOnSave": true,
+    "include": [
+        "src"
+    ]
+}

@@ -1,22 +1,25 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Apex Voice Solutions - AI Voice Agents',
-  description: 'Automate your business calls with premium AI Voice Agents.',
+  title: "Apex Voice Solutions",
+  description: "AI-Powered CRM & Voice Automation",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="dark">
+      <body className={cn(inter.className, "bg-slate-950 text-slate-50 antialiased")}>
+        {children}
+      </body>
     </html>
   );
 }
