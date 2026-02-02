@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, MessageSquare, Users, BarChart3, Settings, Phone, Megaphone } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 const sidebarItems = [
     { name: "Launchpad", href: "/dashboard", icon: LayoutDashboard },
