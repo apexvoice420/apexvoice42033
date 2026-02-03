@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Lead } from '@/types';
+import { Lead, LeadStatus } from '@/types';
 import { DndContext, DragEndEvent, DragOverlay, useDraggable, useDroppable } from '@dnd-kit/core';
 import { Loader2, Phone, Calendar, Mail, User, DollarSign, Tag, MessageSquare } from 'lucide-react';
 
-const COLUMNS: { id: Lead['status']; title: string; color: string }[] = [
-    { id: 'New', title: 'New Leads', color: 'border-blue-500' },
-    { id: 'Called', title: 'Hot Leads', color: 'border-yellow-500' },
-    { id: 'Booked', title: 'Booking Requested', color: 'border-green-500' },
-    { id: 'Retry', title: 'Follow Up', color: 'border-orange-500' },
-    { id: 'Lost', title: 'Lost', color: 'border-red-500' },
+const COLUMNS: { id: LeadStatus; title: string; color: string }[] = [
+    { id: LeadStatus.NEW, title: 'New Leads', color: 'border-blue-500' },
+    { id: LeadStatus.CALLED, title: 'Hot Leads', color: 'border-yellow-500' },
+    { id: LeadStatus.DEMO_BOOKED, title: 'Booking Requested', color: 'border-green-500' },
+    { id: LeadStatus.CONTACTING, title: 'Follow Up', color: 'border-orange-500' },
+    { id: LeadStatus.NOT_INTERESTED, title: 'Lost', color: 'border-red-500' },
 ];
 
 interface KanbanBoardProps {
