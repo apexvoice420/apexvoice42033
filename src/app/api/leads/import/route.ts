@@ -1,49 +1,58 @@
-import { NextResponse } from 'next/server';
-// import { getDb } from '@/lib/firebaseAdmin'; // Removed during migration
-import { Lead } from '@/types';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/firebase";
+import { collection, writeBatch, doc } from "firebase/firestore";
+import Papa from "papaparse";
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
     try {
-        const { leads } = await request.json();
+        const formData = await req.formData();
+        const file = formData.get("file") as File;
 
-        if (!Array.isArray(leads)) {
-            return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+        if (!file) {
+            return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
         }
 
-        const db = getDb();
-        const batch = db.batch();
-        const leadsRef = db.collection('leads');
+        const text = await file.text();
+        const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+        const rows = parsed.data as any[];
+
+        if (rows.length === 0) {
+            return NextResponse.json({ error: "Empty CSV file" }, { status: 400 });
+        }
+
+        const batch = writeBatch(db);
+        const leadsRef = collection(db, "leads");
         let count = 0;
 
-        for (const leadData of leads) {
-            // Create a new ref for each lead
-            const docRef = leadsRef.doc();
-
-            const lead: Lead = {
-                id: docRef.id,
-                businessName: leadData.businessName || 'Unknown',
-                phoneNumber: leadData.phoneNumber,
-                status: 'New',
-                city: leadData.city || '',
-                niche: leadData.niche || 'Imported',
-                website: leadData.website,
-                notes: leadData.notes,
-                createdAt: new Date(),
+        for (const row of rows) {
+            // Map CSV columns to Lead model
+            const leadData = {
+                businessName: row["Business Name"] || row["name"] || "Unknown Business",
+                phone: row["Phone"] || row["phone"] || "",
+                email: row["Email"] || row["email"] || "",
+                city: row["City"] || row["city"] || "",
+                status: "New Lead",
+                createdAt: new Date().toISOString(),
+                source: "CSV Import"
             };
 
-            batch.set(docRef, lead);
+            const newDocRef = doc(leadsRef);
+            batch.set(newDocRef, leadData);
             count++;
-
-            // Firestore batch limit is 500. 
-            // For this simple implementation we assume < 500 or just do one batch.
-            // In prod, would check count % 500 === 0 and commit.
         }
 
         await batch.commit();
 
-        return NextResponse.json({ success: true, count });
-    } catch (error: any) {
-        console.error('Import error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({
+            message: "Import successful",
+            count: count
+        });
+
+    } catch (error) {
+        console.error("Import error:", error);
+        return NextResponse.json(
+            { error: "Failed to process import" },
+            { status: 500 }
+        );
     }
 }

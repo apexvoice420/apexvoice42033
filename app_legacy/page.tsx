@@ -11,9 +11,9 @@ export default function Home() {
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white">
                         A
                     </div>
-                    <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                        Apex Voice
-                    </span>
+                    <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                        Apex Voice Solutions <span className="text-lg text-emerald-400 font-mono">v2.0</span>
+                    </h1>
                 </div>
                 <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
                     <Link href="#features" className="hover:text-white transition-colors">Features</Link>

@@ -32,7 +32,9 @@ export default function LoginPage() {
         <div className="flex h-screen w-full items-center justify-center bg-slate-900 px-4">
             <Card className="w-full max-w-sm border-slate-800 bg-slate-950 text-slate-100">
                 <CardHeader>
-                    <CardTitle className="text-2xl text-white">Login</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center text-white">
+                        Access CRM <span className="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-full border border-emerald-500/20">v2.0</span>
+                    </CardTitle>
                     <CardDescription className="text-slate-400">
                         (Mock Mode) Enter any email/password to continue.
                     </CardDescription>
