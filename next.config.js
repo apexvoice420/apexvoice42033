@@ -2,9 +2,7 @@
 // Cache buster: 1
 const nextConfig = {
     output: 'standalone',
-    experimental: {
-        serverComponentsExternalPackages: ['playwright-core']
-    }
+    serverExternalPackages: ['playwright-core']
 };
 
 module.exports = nextConfig;
