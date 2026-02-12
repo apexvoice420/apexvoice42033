@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Phase 2: Top Stats Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1 -->
+        <div
+            class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg relative overflow-hidden group hover:border-blue-500/50 transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Total Leads</p>
+                    <h3 class="text-3xl font-bold text-white mt-1">{{ stats.total_leads }}</h3>
+                </div>
+                <div class="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+                    <i class="fa-solid fa-users text-xl"></i>
+                </div>
+            </div>
+            <div class="flex items-center text-sm text-green-400">
+                <i class="fa-solid fa-arrow-trend-up mr-1"></i>
+                <span>+12% <span class="text-gray-500 ml-1">vs last week</span></span>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div
+            class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg relative overflow-hidden group hover:border-purple-500/50 transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Calls Made</p>
+                    <h3 class="text-3xl font-bold text-white mt-1">{{ stats.calls_made }}</h3>
+                </div>
+                <div class="p-3 bg-purple-500/10 rounded-lg text-purple-400">
+                    <i class="fa-solid fa-phone-volume text-xl"></i>
+                </div>
+            </div>
+            <div class="flex items-center text-sm text-green-400">
+                <i class="fa-solid fa-arrow-trend-up mr-1"></i>
+                <span>+5% <span class="text-gray-500 ml-1">completion</span></span>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div
+            class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg relative overflow-hidden group hover:border-orange-500/50 transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Conversion</p>
+                    <h3 class="text-3xl font-bold text-white mt-1">{{ stats.conversion_rate }}%</h3>
+                </div>
+                <div class="p-3 bg-orange-500/10 rounded-lg text-orange-400">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+            </div>
+            <div class="w-full bg-gray-700 h-1.5 rounded-full mt-4 overflow-hidden">
+                <div class="bg-orange-500 h-full rounded-full" style="width: {{ stats.conversion_rate }}%"></div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div
+            class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg relative overflow-hidden group hover:border-green-500/50 transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Revenue Pipe</p>
+                    <h3 class="text-3xl font-bold text-white mt-1">${{ stats.revenue }}</h3>
+                </div>
+                <div class="p-3 bg-green-500/10 rounded-lg text-green-400">
+                    <i class="fa-solid fa-sack-dollar text-xl"></i>
+                </div>
+            </div>
+            <div class="flex items-center text-sm text-gray-400">
+                <span>Avg Deal: $500</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase 3: The Leads Table -->
+    <div class="bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden">
+        <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-white">Latest Leads</h2>
+            <div class="flex gap-2">
+                <input type="text" placeholder="Search leads..."
+                    class="bg-gray-900 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-blue-500">
+                <button onclick="document.getElementById('import-modal').showModal()"
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm border border-blue-600 flex items-center gap-2">
+                    <i class="fa-solid fa-file-csv"></i> Import CSV
+                </button>
+                <button
+                    class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-1.5 rounded-lg text-sm border border-gray-600"><i
+                        class="fa-solid fa-filter"></i> Filter</button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-900/50 text-gray-400 text-xs uppercase tracking-wider">
+                        <th class="p-4 font-medium border-b border-gray-700">Name & Contact</th>
+                        <th class="p-4 font-medium border-b border-gray-700">Status</th>
+                        <th class="p-4 font-medium border-b border-gray-700">Last Action</th>
+                        <th class="p-4 font-medium border-b border-gray-700 text-right">Controls</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700 text-sm">
+                    {% for lead in leads %}
+                    <tr class="hover:bg-gray-750 transition-colors group">
+                        <td class="p-4">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 font-bold text-xs">
+                                    {{ lead.name[:2].upper() }}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white">{{ lead.name }}</p>
+                                    <p class="text-xs text-gray-500">{{ lead.email }}</p>
+                                    <p class="text-xs text-gray-500">{{ lead.phone }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            {% set status_colors = {
+                            'NEW': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                            'CONTACTING': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                            'NURTURING': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+                            'BOOKED': 'bg-green-500/10 text-green-400 border-green-500/20',
+                            'DEAD': 'bg-red-500/10 text-red-400 border-red-500/20'
+                            } %}
+                            <span
+                                class="px-2.5 py-1 rounded-full text-xs font-medium border {{ status_colors.get(lead.status.value, 'bg-gray-700 text-gray-400') }}">
+                                {{ lead.status.value }}
+                            </span>
+                        </td>
+                        <td class="p-4 text-gray-400">
+                            {{ lead.created_at.strftime('%b %d, %H:%M') }}
+                            <div class="text-xs text-gray-500 mt-1 truncate max-w-[150px]">{{ lead.notes or "No notes"
+                                }}</div>
+                        </td>
+                        <td class="p-4 text-right">
+                            <div
+                                class="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                <button hx-post="/api/trigger-call/{{ lead.id }}" hx-swap="none"
+                                    onclick="alert('Calling {{ lead.name }}...')"
+                                    class="p-2 rounded bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white transition"
+                                    title="Call Now">
+                                    <i class="fa-solid fa-phone"></i>
+                                </button>
+                                <button
+                                    class="p-2 rounded bg-gray-700 text-gray-400 hover:bg-blue-500 hover:text-white transition"
+                                    title="Edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button hx-delete="/api/lead/{{ lead.id }}"
+                                    hx-confirm="Are you sure you want to delete {{ lead.name }}?" hx-target="closest tr"
+                                    class="p-2 rounded bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition"
+                                    title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% if leads|length == 0 %}
+                    <tr>
+                        <td colspan="4" class="p-8 text-center text-gray-500">
+                            <i class="fa-solid fa-inbox text-4xl mb-3 opacity-50"></i>
+                            <p>No leads found yet.</p>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination (Visual only for now) -->
+        <div class="px-6 py-4 border-t border-gray-700 flex justify-between items-center">
+            <p class="text-xs text-gray-500">Showing <span class="text-white">{{ leads|length }}</span> results</p>
+            <div class="flex gap-2">
+                <button class="px-3 py-1 rounded bg-gray-700 text-gray-400 text-xs hover:text-white disabled:opacity-50"
+                    disabled>Previous</button>
+                <button class="px-3 py-1 rounded bg-gray-700 text-gray-400 text-xs hover:text-white disabled:opacity-50"
+                    disabled>Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Import Modal -->
+<dialog id="import-modal"
+    class="bg-gray-800 text-white rounded-xl shadow-2xl p-0 w-full max-w-lg backdrop:bg-black/80 border border-gray-700">
+    <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+        <h3 class="text-xl font-bold">Import Leads CSV</h3>
+        <button onclick="document.getElementById('import-modal').close()" class="text-gray-400 hover:text-white">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+    <form id="importForm" class="p-6 space-y-4">
+        <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-blue-500 transition-colors cursor-pointer"
+            onclick="document.getElementById('csvInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-500 mb-3"></i>
+            <p class="text-gray-300 font-medium">Click to upload CSV</p>
+            <p class="text-xs text-gray-500 mt-1">Accepted columns: Business Name, Phone, Email, Rating, Niche</p>
+            <input type="file" id="csvInput" name="file" accept=".csv" class="hidden"
+                onchange="document.getElementById('fileName').innerText = this.files[0].name">
+            <p id="fileName" class="text-sm text-blue-400 mt-2 font-mono"></p>
+        </div>
+
+        <div class="flex justify-end pt-4">
+            <button type="submit"
+                class="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-upload"></i> Upload Leads
+            </button>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('importForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('csvInput');
+            if (fileInput.files.length === 0) {
+                alert("Please select a file first.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/leads/import', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message);
+                    window.location.reload();
+                } else {
+                    alert("Error: " + result.detail);
+                }
+            } catch (err) {
+                alert("Upload failed: " + err);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                document.getElementById('import-modal').close();
+            }
+        });
+    </script>
+</dialog>
+{% endblock %}

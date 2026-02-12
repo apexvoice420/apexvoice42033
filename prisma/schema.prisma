@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id           Int       @id @default(autoincrement())
+  businessName String    @map("business_name")
+  phone        String    @unique
+  email        String?
+  website      String?
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?   @map("zip_code")
+  niche        String?
+  rating       Decimal?  @db.Decimal(2, 1)
+  reviewCount  Int?      @map("review_count")
+  status       String    @default("New Lead")
+  source       String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  lastCalledAt DateTime? @map("last_called_at")
+  
+  calls        Call[]
+  notes        Note[]
+
+  @@index([status])
+  @@index([city, state])
+  @@map("leads")
+}
+
+model Call {
+  id          Int       @id @default(autoincrement())
+  leadId      Int       @map("lead_id")
+  vapiCallId  String?   @map("vapi_call_id")
+  phoneNumber String?   @map("phone_number")
+  duration    Int?
+  status      String?
+  outcome     String?
+  transcript  String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  completedAt DateTime? @map("completed_at")
+
+  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@map("calls")
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  leadId    Int      @map("lead_id")
+  content   String   @db.Text
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@map("notes")
+}

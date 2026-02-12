@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Apex Lead OS - Workflows{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-white">Workflows</h2>
+            <p class="text-gray-400 text-sm">Automate lead ingestion and processing.</p>
+        </div>
+        <button onclick="document.getElementById('new-workflow-modal').showModal()"
+            class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> New Workflow
+        </button>
+    </div>
+
+    <!-- Active Workflows Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for workflow in workflows %}
+        <div class="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg relative group">
+            <div class="flex justify-between items-start mb-4">
+                <div class="p-3 bg-green-500/10 rounded-lg text-green-400">
+                    <i class="fa-solid fa-file-csv text-xl"></i>
+                </div>
+                <!-- Controls -->
+                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button class="text-gray-400 hover:text-white" title="Settings"><i
+                            class="fa-solid fa-gear"></i></button>
+                    <button hx-delete="/api/workflows/{{ workflow.id }}" hx-target="closest .group" hx-swap="outerHTML"
+                        class="text-gray-400 hover:text-red-400" title="Delete"><i
+                            class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-white mb-1">{{ workflow.name }}</h3>
+            <p class="text-xs text-gray-400 mb-4 bg-gray-700/50 p-1.5 rounded truncate font-mono">ID: {{ workflow.config
+                }}</p>
+
+            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
+                <span class="text-xs text-gray-500">
+                    {% if workflow.last_run %}
+                    Last sync: {{ workflow.last_run.strftime('%b %d, %H:%M') }}
+                    {% else %}
+                    Never run
+                    {% endif %}
+                </span>
+
+                <button hx-post="/api/workflows/sync/{{ workflow.id }}" hx-swap="none"
+                    onclick="alert('Sync started! Check Dashboard for new leads.')"
+                    class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded transition">
+                    <i class="fa-solid fa-rotate mr-1"></i> Sync Now
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Empty State -->
+        {% if workflows|length == 0 %}
+        <div class="col-span-full py-12 text-center border-2 border-dashed border-gray-700 rounded-xl">
+            <i class="fa-solid fa-robot text-4xl text-gray-600 mb-3"></i>
+            <h3 class="text-gray-400 font-medium">No active workflows</h3>
+            <p class="text-gray-500 text-sm mt-1">Create a workflow to import leads automatically.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- New Workflow Modal -->
+<dialog id="new-workflow-modal"
+    class="bg-gray-800 text-white rounded-xl shadow-2xl p-0 w-full max-w-lg backdrop:bg-black/80 border border-gray-700">
+    <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+        <h3 class="text-xl font-bold">New Workflow</h3>
+        <button onclick="document.getElementById('new-workflow-modal').close()" class="text-gray-400 hover:text-white">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+    <form hx-post="/api/workflows" hx-target="body" hx-swap="none"
+        onsubmit="setTimeout(()=>window.location.reload(), 500)">
+        <!-- Reload for simplicity to see new item -->
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Workflow Name</label>
+                <input type="text" name="name" required placeholder="e.g. Daily Leads Import"
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Trigger Type</label>
+                <select name="trigger_type"
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+                    <option value="GOOGLE_SHEET_IMPORT">Google Sheets Sync</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Google Sheet ID</label>
+                <input type="text" name="config" required placeholder="e.g. 1BxiMVs0XRA5nFMdKbBdB_72lDDne5..."
+                    class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500">
+                <p class="text-xs text-gray-500 mt-1">Copy the ID from your Google Sheet URL.</p>
+            </div>
+        </div>
+        <div class="p-6 border-t border-gray-700 bg-gray-800/50 flex justify-end gap-3">
+            <button type="button" onclick="document.getElementById('new-workflow-modal').close()"
+                class="px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition">Cancel</button>
+            <button type="submit"
+                class="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-lg shadow-blue-900/20">Create
+                Workflow</button>
+        </div>
+    </form>
+</dialog>
+{% endblock %}
