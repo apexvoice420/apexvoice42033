@@ -1,0 +1,18 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+
+# Firebase functions - not needed for Next.js build
+functions/
+
+# Firebase config
+.firebase/
+firebase.json
+firebase-*.json
+
+# Environment files
+.env*.local
