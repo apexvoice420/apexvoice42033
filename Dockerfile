@@ -1,5 +1,8 @@
 FROM node:20-alpine AS base
 
+# Clerk publishable key (safe to expose - it's a public key)
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cm9idXN0LXN3aWZ0LTI1LmNsZXJrLmFjY291bnRzLmRldiQ
+
 # Install dependencies only when needed
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
@@ -14,6 +17,10 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Build-time environment variables for Clerk
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
