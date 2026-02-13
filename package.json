@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.37.3",
     "@dnd-kit/core": "latest",
     "@radix-ui/react-checkbox": "latest",
     "@radix-ui/react-collapsible": "latest",
