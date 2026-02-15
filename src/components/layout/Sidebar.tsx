@@ -50,7 +50,7 @@ const routes = [
     {
         label: "Calendar",
         icon: Calendar,
-        href: "/dashboard/calendar",
+        href: "/dashboard/calendars",
         color: "text-green-700",
     },
     {

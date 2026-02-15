@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "../.."
+		},
+		{
+			"path": "../../../apex-voice-solutions (1)"
 		}
 	],
 	"settings": {}
