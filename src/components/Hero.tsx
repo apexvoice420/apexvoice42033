@@ -75,6 +75,14 @@ export default function Hero() {
                         >
                             Book a Demo
                         </button>
+                        <a
+                            href="tel:+13863199076"
+                            className="inline-flex flex-col items-center gap-2 px-10 py-5 bg-gradient-to-br from-indigo-500 to-purple-600 text-white no-underline rounded-2xl font-bold shadow-xl shadow-indigo-500/30 hover:scale-105 transition-transform"
+                        >
+                            <span className="text-2xl">📞</span>
+                            <span className="text-sm">Call for Live Demo</span>
+                            <span className="text-[10px] opacity-90">+1 (386) 319-9076</span>
+                        </a>
                         <button
                             onClick={handleHearVoice}
                             className={styles.secondaryButton}
