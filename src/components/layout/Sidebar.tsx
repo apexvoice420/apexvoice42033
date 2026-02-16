@@ -24,6 +24,18 @@ const routes = [
         color: "text-sky-500",
     },
     {
+        label: "Agents",
+        icon: Bot,
+        href: "/dashboard/agents",
+        color: "text-blue-500",
+    },
+    {
+        label: "Workflows",
+        icon: Workflow,
+        href: "/dashboard/workflows",
+        color: "text-emerald-500",
+    },
+    {
         label: "Lead Scraper",
         icon: Search,
         href: "/dashboard/scraper",
@@ -58,12 +70,6 @@ const routes = [
         icon: BarChart3,
         href: "/dashboard/reports",
         color: "text-blue-700",
-    },
-    {
-        label: "Automation",
-        icon: Bot,
-        href: "/dashboard/automation",
-        color: "text-rose-700",
     },
     {
         label: "Team",

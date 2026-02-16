@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dnd-kit/core": "latest",
+    "@prisma/client": "^5.22.0",
     "@radix-ui/react-checkbox": "latest",
     "@radix-ui/react-collapsible": "latest",
     "@radix-ui/react-context-menu": "latest",
@@ -37,6 +38,7 @@
     "framer-motion": "latest",
     "lucide-react": "latest",
     "next": "16.1.6",
+    "prisma": "^5.22.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "recharts": "latest",
