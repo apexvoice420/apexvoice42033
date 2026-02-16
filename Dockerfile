@@ -1,11 +1,8 @@
 FROM node:20-alpine AS base
 
-# Clerk publishable key (safe to expose - it's a public key)
-ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cm9idXN0LXN3aWZ0LTI1LmNsZXJrLmFjY291bnRzLmRldiQ
-
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
@@ -14,13 +11,13 @@ RUN npm ci --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
+RUN apk add --no-cache openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build-time environment variables for Clerk
-ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+# Generate Prisma Client
+RUN npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -28,6 +25,7 @@ RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
+RUN apk add --no-cache openssl
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -44,6 +42,11 @@ RUN mkdir .next && chown -R nextjs:nodejs .next public
 # Automatically leverage output traces to reduce image size
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy Prisma schema and generated client
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
