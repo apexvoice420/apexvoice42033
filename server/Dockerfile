@@ -28,4 +28,4 @@ COPY . .
 EXPOSE $PORT
 
 # Start server
-CMD ["node", "src/server.js"]
+CMD ["node", "server.js"]
