@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { MessageSquare, Phone, User, Clock, Search, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 

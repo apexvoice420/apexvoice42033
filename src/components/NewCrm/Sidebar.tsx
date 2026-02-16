@@ -28,10 +28,7 @@ export default function Sidebar() {
                 {/* Logo */}
                 <div className="p-6 border-b border-gray-800">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
-                            A
-                        </div>
-                        <span className="text-xl font-bold tracking-tight text-white">Apex Voice</span>
+                        <img src="/assets/logo.png" alt="Apex Voice Solutions" className="h-8 w-auto" />
                     </div>
                 </div>
 

@@ -23,7 +23,12 @@ export default function WorkflowsPage() {
     useEffect(() => {
         const saved = localStorage.getItem("apex_workflows");
         if (saved) {
-            setWorkflows(JSON.parse(saved));
+            const parsed = JSON.parse(saved);
+            const typed: WorkflowData[] = parsed.map((w: any) => ({
+                ...w,
+                status: w.status === "ACTIVE" || w.status === "PAUSED" ? w.status : "ACTIVE"
+            }));
+            setWorkflows(typed);
         } else {
             const initial: WorkflowData[] = [
                 { id: "1", name: "Auto-Book Appointment", trigger: "Post-Call Summary", action: "Google Calendar", status: "ACTIVE" },
@@ -51,7 +56,7 @@ export default function WorkflowsPage() {
     };
 
     const toggleStatus = (id: string) => {
-        const updated = workflows.map(wf => wf.id === id ? { ...wf, status: wf.status === "ACTIVE" ? "PAUSED" : "ACTIVE" } : wf);
+        const updated: WorkflowData[] = workflows.map(wf => wf.id === id ? { ...wf, status: wf.status === "ACTIVE" ? "PAUSED" as const : "ACTIVE" as const } : wf);
         setWorkflows(updated);
         localStorage.setItem("apex_workflows", JSON.stringify(updated));
     };

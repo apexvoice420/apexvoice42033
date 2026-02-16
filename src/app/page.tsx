@@ -8,12 +8,7 @@ export default function Home() {
       {/* Navbar */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white">
-            A
-          </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-            Apex Voice
-          </span>
+          <img src="/assets/logo.png" alt="Apex Voice Solutions" className="h-8 w-auto" />
         </div>
         <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
           <Link href="#features" className="hover:text-white transition-colors">Features</Link>

@@ -25,7 +25,7 @@ export default function LoginPage() {
                 email,
                 loggedIn: true
             }))}; path=/; max-age=86400`;
-            
+
             // Also set localStorage for client-side access
             localStorage.setItem('apex_auth', JSON.stringify({
                 email,
@@ -43,8 +43,7 @@ export default function LoginPage() {
         <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
             <div className="max-w-md w-full">
                 <div className="text-center mb-8">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white text-2xl mx-auto mb-4">A</div>
-                    <h1 className="text-3xl font-bold text-white">Apex Voice CRM</h1>
+                    <img src="/assets/logo.png" alt="Apex Voice Solutions" className="h-16 w-auto mx-auto mb-4" />
                     <p className="text-slate-400 mt-2">Sign in to your dashboard</p>
                 </div>
 
