@@ -37,6 +37,11 @@ export function middleware(request: NextRequest) {
             const loginUrl = new URL('/login', request.url)
             return NextResponse.redirect(loginUrl)
         }
+
+        // Add cache control headers for authenticated routes
+        const response = NextResponse.next()
+        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+        return response
     }
 
     return NextResponse.next()

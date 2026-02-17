@@ -1,16 +1,13 @@
-import { Sidebar } from "@/components/layout/Sidebar";
+import { ReactNode } from 'react'
+
+// Force dynamic rendering for all dashboard routes
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function DashboardLayout({
     children,
 }: {
-    children: React.ReactNode;
+    children: ReactNode
 }) {
-    return (
-        <div className="flex h-screen overflow-hidden bg-slate-950">
-            <Sidebar />
-            <main className="flex-1 overflow-y-auto">
-                {children}
-            </main>
-        </div>
-    );
+    return children
 }
